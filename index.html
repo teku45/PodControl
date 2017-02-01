@@ -1,0 +1,500 @@
+<html>
+
+<head>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body style="-webkit-app-region: drag">
+    <br>
+    <!-- SCRIPT REFERENCES -->
+    <script src="js/jspack.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/scripts.js"></script>
+    <script src="js/send.js"></script>
+    <script src="js/raphael-2.1.4.min.js"></script>
+    <script src="js/justgage.js"></script>
+    <script src="js/Chart.js"></script>
+    <script src="js/Chart.bundle.js"></script>
+
+    <div class="container-fluid">
+        <br>
+        <!-- LOGO and Status Bar -->
+        <div class="row">
+            <div class="col-xs-2" align="left">
+                <!-- Logo -->
+                <img src="Main%20Inverse.png" height=40px>
+            </div>
+            <div class="col-xs-1">
+                <div class="apple">Distance (m)</div>
+                <div id="distance" class="pineapple">0</div>
+            </div>
+            <div class="col-xs-1">
+                <div class="apple">I-Beam (cm)</div>
+                <div id="distanceFromBottom" class="pineapple">0</div>
+            </div>
+            <div class="col-xs-1">
+                <div class="apple">Pot 1</div>
+                <div id="pot1" class="pineapple">0</div>
+            </div>
+            <div class="col-xs-1">
+                <div class="apple">Pot 2</div>
+                <div id="pot2" class="pineapple">0</div>
+            </div>
+            <div class="col-xs-1">
+                <div class="apple">Pot 3</div>
+                <div id="pot3" class="pineapple">0</div>
+            </div>
+            <div class="col-xs-1">
+                <div class="apple">Pot 4</div>
+                <div id="pot4" class="pineapple">0</div>
+            </div>
+            <div class="col-xs-1">
+                <div class="apple">Pot 5</div>
+                <div id="pot5" class="pineapple">0</div>
+            </div>
+            <div class="col-xs-1">
+                <div class="apple">Pot 6</div>
+                <div id="pot6" class="pineapple">0</div>
+            </div>
+            <div class="col-xs-1">
+                <div class="apple">Pot 7</div>
+                <div id="pot7" class="pineapple">0</div>
+            </div>
+            <div class="col-xs-1">
+                <div class="apple">Pot 8</div>
+                <div id="pot8" class="pineapple">0</div>
+            </div>
+        </div>
+
+        <br>
+
+        <!-- Gauges -->
+        <div class="row">
+            <div class="col-xs-1">
+                <div class="row">
+                    <div class="col-xs-12 col-centered">
+                        <div class="row">
+                            <div id="temperatureGauge" style="width:120px; height:108px" align="center"></div>
+                            <script>
+                                var temperatureGauge = new JustGage({
+                                    id: "temperatureGauge",
+                                    value: 0,
+                                    min: 20,
+                                    max: 100,
+                                    title: "Pod Temperature",
+                                    gaugeWidthScale: 0.50,
+                                    counter: true,
+                                    valueFontColor: "#fff",
+                                    valueFontFamily: "Verdana",
+                                    valueMinFontSize: "20"
+                                });
+
+                                function updateTemperature() {
+                                    var temperature = document.getElementById("temperature").innerHTML;
+                                    temperatureGauge.refresh(temperature);
+                                }
+                                setInterval(updateTemperature, 50);
+                            </script>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-centered">
+                        <div class="row">
+
+                        </div>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="apple">Pod State</div>
+                        <div class="pineapple" id="status">0</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="apple">Pusher (cm)</div>
+                        <div class="pineapple" id="distanceFromPusher">0</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="apple">Time Since Pushing (s)</div>
+                        <div class="pineapple" id="timer">0</div>
+                    </div>
+                    <script>
+                        var firstCall = true;
+                        var myRealTime;
+                        setInterval(GatorLoop, 100);
+                        var myTime;
+                        var myTimeMilliseconds;
+
+                        function GatorLoop() {
+                            if (document.getElementById("status").innerHTML == "Pushing" && firstCall) {
+                                myTime = new Date();
+                                myTimeMilliseconds = myTime.getTime();
+                                setInterval(TUDelft, 50)
+                                firstCall = false;
+                            }
+                        }
+
+                        function TUDelft() {
+                            var myNewTime = new Date().getTime();
+                            document.getElementById("timer").innerHTML = Math.round((Number(myNewTime) - Number(myTimeMilliseconds)) / 1000);
+                        }
+                    </script>
+                </div>
+            </div>
+            <div class="col-xs-11">
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div id="accelerationGauge" style="width:600px; height:300px" align="center"></div>
+                    </div>
+                    <div class="col-xs-6">
+                        <div id="velocityGauge" style="width:600; height:300px" align="center"></div>
+                    </div>
+                </div>
+                <br>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <canvas id="myChart" width="530" height="120" algin="center"></canvas>
+                        <script>
+                            var accelerationGauge = new JustGage({
+                                id: "accelerationGauge",
+                                value: 0,
+                                min: -25,
+                                max: 25,
+                                title: "Acceleration",
+                                gaugeWidthScale: 0.15,
+                                counter: true,
+                                valueFontColor: "#fff",
+                                valueFontFamily: "Verdana",
+                                valueMinFontSize: "70",
+                                humanFriendlyDecimal: true,
+                                decimals: 3
+                            });
+                            var time = 0.00;
+                            var canvas = document.getElementById('myChart');
+                            var data = {
+                                labels: [],
+                                datasets: [{
+                                    fill: false,
+                                    lineTension: 0.1,
+                                    backgroundColor: "rgba(75,192,192,0.4)",
+                                    borderColor: "rgba(75,192,192,1)",
+                                    borderCapStyle: 'butt',
+                                    borderDash: [],
+                                    borderDashOffset: 0.0,
+                                    borderJoinStyle: 'miter',
+                                    pointBorderColor: "rgba(75,192,192,1)",
+                                    pointBackgroundColor: "#fff",
+                                    pointBorderWidth: 1,
+                                    pointHoverRadius: 5,
+                                    pointHoverBackgroundColor: "rgba(75,192,192,1)",
+                                    pointHoverBorderColor: "#222",
+                                    pointHoverBorderWidth: 2,
+                                    pointRadius: 0,
+                                    pointHitRadius: 0,
+                                    data: [],
+                                }]
+                            };
+                            var option = {
+                                showLines: false,
+                                title: {
+                                    display: false,
+                                    text: "Acceleration"
+                                },
+                                legend: {
+                                    display: false
+                                },
+                                responsive: false,
+                                maintainAspectRatio: true
+                            };
+                            var myLineChart = Chart.Line(canvas, {
+                                data: data,
+                                options: option
+                            });
+
+                            function updateLabel() {
+                                var acceleration = document.getElementById("acceleration").innerHTML;
+                                accelerationGauge.refresh(acceleration);
+                                //Update Labels
+                                if (time > 5) {
+                                    myLineChart.data.labels.shift();
+                                }
+                                myLineChart.data.labels.push("");
+                                //console.log(myLineChart.data.labels);
+                                //Update Data
+                                if (time > 5) {
+                                    myLineChart.data.datasets[0].data.shift();
+                                }
+                                myLineChart.data.datasets[0].data.push(acceleration);
+                                //console.log(myLineChart.data.datasets[0].data);
+                                time = time + 0.05;
+                                myLineChart.update();
+                            }
+                            setInterval(updateLabel, 50);
+                        </script>
+                    </div>
+                    <div class="col-xs-6">
+                        <canvas id="velocityChart" width="530" height="120" align="center"></canvas>
+                        <script>
+                            var velocityGauge = new JustGage({
+                                id: "velocityGauge",
+                                value: 0,
+                                min: 0,
+                                max: 100,
+                                title: "Velocity",
+                                gaugeWidthScale: 0.15,
+                                counter: true,
+                                valueFontColor: "#fff",
+                                valueFontFamily: "Verdana",
+                                valueMinFontSize: "75",
+                                hideMinMax: false,
+                                humanFriendlyDecimal: true,
+                                decimals: 3
+                            });
+                            var time = 0.00;
+                            var canvas = document.getElementById('velocityChart');
+                            var data = {
+                                labels: [],
+                                datasets: [{
+                                    fill: false,
+                                    lineTension: 0.1,
+                                    backgroundColor: "rgba(75,192,192,0.4)",
+                                    borderColor: "rgba(75,0,192,1)",
+                                    borderCapStyle: 'butt',
+                                    borderDash: [],
+                                    borderDashOffset: 0.0,
+                                    borderJoinStyle: 'miter',
+                                    pointBorderColor: "rgba(75,192,192,1)",
+                                    pointBackgroundColor: "#fff",
+                                    pointBorderWidth: 1,
+                                    pointHoverRadius: 5,
+                                    pointHoverBackgroundColor: "rgba(75,192,192,1)",
+                                    pointHoverBorderColor: "#222",
+                                    pointHoverBorderWidth: 2,
+                                    pointRadius: 0,
+                                    pointHitRadius: 0,
+                                    data: [],
+                                }]
+                            };
+                            var option = {
+                                showLines: false,
+                                title: {
+                                    display: false,
+                                    text: "Velocity"
+                                },
+                                legend: {
+                                    display: false
+                                },
+                                responsive: false,
+                                maintainAspectRatio: true
+                            };
+                            var myLineChartVel = Chart.Line(canvas, {
+                                data: data,
+                                options: option
+                            });
+
+                            function updateVelLabel() {
+                                var velocity = document.getElementById("velocity").innerHTML;
+                                velocityGauge.refresh(velocity);
+                                //Update Label
+                                if (time > 5) {
+                                    myLineChartVel.data.labels.shift();
+                                }
+                                myLineChartVel.data.labels.push("");
+
+                                //Update Data
+                                if (time > 5) {
+                                    myLineChartVel.data.datasets[0].data.shift();
+                                }
+                                myLineChartVel.data.datasets[0].data.push(velocity);
+                                myLineChartVel.update();
+                            }
+                            setInterval(updateVelLabel, 50);
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- BRAKE, RELEASE, AND ACCELERATE BUTTONS-->
+        <div class="row">
+            <div class="col-xs-3">
+                <!-- Brake Button -->
+
+                <button type="button" class="btn btn-danger btn-block btn-lg" onclick="brake()">
+               E-Stop
+               </button>
+            </div>
+            <div class="col-xs-3">
+                <!-- Ready Button -->
+
+                <button type="button" class="btn btn-success btn-block btn-lg" onclick="ready()">
+               Ready
+               </button>
+            </div>
+            <div class="col-xs-2">
+                <!-- Ready Button -->
+
+                <button type="button" class="btn btn-warning btn-block btn-lg" onclick="popupBrake()">
+                    Manual Brake
+                </button>
+            </div>
+            <div class="col-xs-2">
+                <!-- Ready Button -->
+
+                <button type="button" class="btn btn-primary btn-block btn-lg" onclick="popupRelease()">
+                    Manual Release
+                </button>
+
+            </div>
+            <div class="col-xs-2">
+                <!-- Ready Button -->
+
+                <button type="button" class="btn btn-info btn-block btn-lg" onclick="leave()">
+                    Leave Debug
+                </button>
+
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-xs-12">
+
+            </div>
+        </div>
+    </div>
+</body>
+<div class="row">
+    <div class="col-xs-1">
+        <div id="acceleration">0</div>
+    </div>
+    <div class="col-xs-1">
+        <div id="velocity">0</div>
+    </div>
+    <div class="col-xs-1">
+
+    </div>
+    <div class="col-xs-1">
+        <div id="temperature">0</div>
+    </div>
+    <div class="col-xs-1">
+
+    </div>
+    <div class="col-xs-1">
+        <div id="pressure">0</div>
+    </div>
+</div>
+
+<script>
+    healthCheckStuff();
+
+    var refPot1 = document.getElementById("pot1");
+    var refPot2 = document.getElementById("pot2");
+    var refPot3 = document.getElementById("pot3");
+    var refPot4 = document.getElementById("pot4");
+    var refPot5 = document.getElementById("pot5");
+    var refPot6 = document.getElementById("pot6");
+    var refPot7 = document.getElementById("pot7");
+    var refPot8 = document.getElementById("pot8");
+    var refPusher = document.getElementById("distanceFromPusher");
+    var refBottom = document.getElementById("distanceFromBottom");
+    var refDistance = document.getElementById("distance");
+    var refAccel = document.getElementById("accelerationGauge");
+    var refVel = document.getElementById("velocityGauge");
+
+
+    var inHealthCheck = false;
+
+    function healthCheckStuff() {
+        if (!inHealthCheck) {
+            inHealthCheck = true;
+            var pot1loop = setInterval(updatePot1, 50);
+
+        }
+    }
+
+    var maxPot = 1024;
+    var minPot = 250;
+
+    function updatePot1() {
+        if (refPot1.innerHTML < 1026 && refPot1.innerHTML > minPot) {
+            refPot1.style.backgroundColor = "green";
+        } else {
+            refPot1.style.backgroundColor = "red";
+        }
+        if (refPot2.innerHTML < 993 && refPot2.innerHTML > minPot) {
+            refPot2.style.backgroundColor = "green";
+        } else {
+            refPot2.style.backgroundColor = "red";
+        }
+        if (refPot3.innerHTML < 1026 && refPot3.innerHTML > minPot) {
+            refPot3.style.backgroundColor = "green";
+        } else {
+            refPot3.style.backgroundColor = "red";
+        }
+        if (refPot4.innerHTML < 1026 && refPot4.innerHTML > minPot) {
+            refPot4.style.backgroundColor = "green";
+        } else {
+            refPot4.style.backgroundColor = "red";
+        }
+        if (refPot5.innerHTML < 933 && refPot5.innerHTML > minPot) {
+            refPot5.style.backgroundColor = "green";
+        } else {
+            refPot5.style.backgroundColor = "red";
+        }
+        if (refPot6.innerHTML < 933 && refPot6.innerHTML > minPot) {
+            refPot6.style.backgroundColor = "green";
+        } else {
+            refPot6.style.backgroundColor = "red";
+        }
+        if (refPot7.innerHTML < 988 && refPot7.innerHTML > minPot) {
+            refPot7.style.backgroundColor = "green";
+        } else {
+            refPot7.style.backgroundColor = "red";
+        }
+        if (refPot8.innerHTML < 1026 && refPot8.innerHTML > minPot) {
+            refPot8.style.backgroundColor = "green";
+        } else {
+            refPot8.style.backgroundColor = "red";
+        }
+
+        //Change max and mins
+        if (refPusher.innerHTML <= 60 && refPusher.innerHTML >= 0) {
+            refPusher.style.backgroundColor = "green";
+        } else {
+            refPusher.style.backgroundColor = "red";
+        }
+        if (refBottom.innerHTML <= 7 && refBottom.innerHTML >= 2) {
+            refBottom.style.backgroundColor = "green";
+        } else {
+            refBottom.style.backgroundColor = "red";
+        }
+        if (refDistance.innerHTML <= 1250) {
+            refDistance.style.backgroundColor = "green";
+        } else {
+            refDistance.style.backgroundColor = "red";
+        }
+        if (document.getElementById("acceleration").innerHTML < 24.525 && document.getElementById("acceleration").innerHTML > -24.525) {
+            refAccel.style.border = "solid";
+            refAccel.style.borderColor = "green";
+        } else {
+            refAccel.style.border = "solid";
+            refAccel.style.borderColor = "red";
+        }
+        if (document.getElementById("velocity").innerHTML >= 0) {
+            refVel.style.border = "solid";
+            refVel.style.borderColor = "green";
+        } else {
+            refVel.style.border = "solid";
+            refVel.style.borderColor = "red";
+        }
+    }
+</script>
+
+</html>
